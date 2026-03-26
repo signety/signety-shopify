@@ -1,0 +1,7 @@
+node_modules/
+.cache/
+build/
+prisma/data.db
+prisma/data.db-journal
+.env
+.env.local

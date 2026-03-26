@@ -1,0 +1,34 @@
+{
+  "name": "signety-shopify",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Signety Supply Chain app for Shopify — order sync, scan-to-bind packing, supply chain tracking",
+  "scripts": {
+    "build": "remix vite:build",
+    "dev": "shopify app dev",
+    "start": "remix-serve ./build/server/index.js",
+    "docker-start": "npx prisma migrate deploy && npm run start",
+    "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx .",
+    "setup": "npx prisma migrate dev"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.0.0",
+    "@remix-run/node": "^2.0.0",
+    "@remix-run/react": "^2.0.0",
+    "@remix-run/serve": "^2.0.0",
+    "@shopify/app-bridge-react": "^4.0.0",
+    "@shopify/polaris": "^12.0.0",
+    "@shopify/shopify-app-remix": "^3.0.0",
+    "isbot": "^4.0.0",
+    "prisma": "^5.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.0.0",
+    "vite": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

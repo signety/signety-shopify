@@ -1,0 +1,32 @@
+# Shopify app configuration
+# See: https://shopify.dev/docs/apps/tools/cli/configuration
+
+name = "Signety Supply Chain"
+client_id = "" # Set via SHOPIFY_API_KEY env var
+application_url = "https://shopify.signety.co"
+embedded = true
+
+[access_scopes]
+scopes = "read_orders,write_orders,read_products,write_products,read_fulfillments"
+
+[auth]
+redirect_urls = [
+  "https://shopify.signety.co/auth/callback",
+  "https://shopify.signety.co/auth/shopify/callback"
+]
+
+[webhooks]
+api_version = "2026-04"
+
+  [webhooks.subscriptions]
+
+  [[webhooks.subscriptions.compliance]]
+  topics = ["customers/data_request", "customers/redact", "shop/redact"]
+  uri = "/webhooks"
+
+  [[webhooks.subscriptions.topics]]
+  topics = ["orders/paid", "orders/cancelled", "fulfillments/create", "fulfillments/update"]
+  uri = "/webhooks"
+
+[pos]
+embedded = false

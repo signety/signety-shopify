@@ -1,0 +1,68 @@
+// Prisma schema for Shopify app — session storage + event queue.
+// Uses SQLite (separate from main Signety PostgreSQL, per MED-10 fix).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Shopify session storage (required by @shopify/shopify-app-remix)
+model Session {
+  id          String   @id
+  shop        String
+  state       String
+  isOnline    Boolean  @default(false)
+  scope       String?
+  expires     DateTime?
+  accessToken String
+  userId      BigInt?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([shop])
+}
+
+// App configuration per shop
+model ShopConfig {
+  id              String   @id @default(uuid())
+  shop            String   @unique
+  signetyApiKey   String   // Encrypted Signety API key
+  signetyApiUrl   String   @default("https://api.signety.co/api/v1/sdk")
+  syncEnabled     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Event queue for async processing (non-blocking outbox pattern)
+model EventQueue {
+  id         String   @id @default(uuid())
+  shop       String
+  eventType  String   // "order_sync", "fulfillment_ship", "order_cancel"
+  payload    String   // JSON string
+  status     String   @default("pending") // pending, processed, failed
+  attempts   Int      @default(0)
+  lastError  String?
+  createdAt  DateTime @default(now())
+  processedAt DateTime?
+
+  @@index([status])
+  @@index([shop, status])
+}
+
+// SKU mapping per shop
+model SkuMapping {
+  id              String   @id @default(uuid())
+  shop            String
+  shopifyProductId String
+  shopifySku      String
+  signetySkuId    String
+  signetySkuName  String?
+  createdAt       DateTime @default(now())
+
+  @@unique([shop, shopifySku])
+  @@index([shop])
+}
