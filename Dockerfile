@@ -3,9 +3,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install deps
+# Install deps (use npm install since no lock file in scaffold)
 COPY package*.json ./
-RUN npm ci --production=false
+RUN npm install
 
 # Copy source
 COPY . .
