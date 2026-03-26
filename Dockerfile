@@ -1,9 +1,12 @@
 # Shopify Remix app Dockerfile for Coolify deployment
 FROM node:20-alpine
 
+# Install OpenSSL (required by Prisma on Alpine)
+RUN apk add --no-cache openssl
+
 WORKDIR /app
 
-# Install deps (use npm install since no lock file in scaffold)
+# Install deps
 COPY package*.json ./
 RUN npm install
 
@@ -13,15 +16,15 @@ COPY . .
 # Generate Prisma client
 RUN npx prisma generate
 
+# Create SQLite database with schema (at build time)
+RUN npx prisma db push --accept-data-loss
+
 # Build Remix app
 RUN npm run build
-
-# Create SQLite data directory (persistent volume in Coolify)
-RUN mkdir -p /app/prisma
 
 # Expose port
 ENV PORT=3000
 EXPOSE 3000
 
-# Run migrations + start server
-CMD ["npm", "run", "docker-start"]
+# Start server (no migration needed — db push already applied schema)
+CMD ["npm", "run", "start"]
